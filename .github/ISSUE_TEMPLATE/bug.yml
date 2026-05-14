@@ -1,0 +1,65 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: input
+    id: macos
+    attributes:
+      label: macOS version
+      description: e.g. 14.4 (Sonoma) or 15.2 (Sequoia)
+      placeholder: "14.4"
+    validations:
+      required: true
+
+  - type: input
+    id: nightcap
+    attributes:
+      label: Nightcap version
+      description: From "About Nightcap" in the menu
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe what you expected vs what actually happened.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Smallest reproducible sequence.
+      placeholder: |
+        1. Add Ghostty as a watched app
+        2. Quit Ghostty
+        3. Observe that the assertion is still held
+    validations:
+      required: true
+
+  - type: textarea
+    id: pmset
+    attributes:
+      label: pmset assertions output
+      description: Run `pmset -g assertions | grep Nightcap` and paste the output. Helps diagnose IOKit-side state.
+      render: shell
+      placeholder: "pid 12345(Nightcap): PreventUserIdleSystemSleep named: \"Nightcap: ...\""
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Console logs
+      description: Filter Console.app for `subsystem:com.abdocodes.nightcap` and paste anything relevant.
+      render: shell
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Confirmation
+      options:
+        - label: I've searched existing issues and this isn't a duplicate
+          required: true

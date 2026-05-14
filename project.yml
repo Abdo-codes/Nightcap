@@ -1,0 +1,124 @@
+name: Nightcap
+
+options:
+  bundleIdPrefix: com.abdocodes
+  deploymentTarget:
+    macOS: 14.0
+
+packages:
+  ComposableArchitecture:
+    url: https://github.com/pointfreeco/swift-composable-architecture
+    from: 1.0.0
+  swift-dependencies:
+    url: https://github.com/pointfreeco/swift-dependencies
+    from: 1.12.0
+  swift-sharing:
+    url: https://github.com/pointfreeco/swift-sharing
+    from: 2.8.0
+  swift-case-paths:
+    url: https://github.com/pointfreeco/swift-case-paths
+    from: 1.7.2
+  swift-concurrency-extras:
+    url: https://github.com/pointfreeco/swift-concurrency-extras
+    from: 1.3.2
+  swift-perception:
+    url: https://github.com/pointfreeco/swift-perception
+    from: 2.0.9
+  xctest-dynamic-overlay:
+    url: https://github.com/pointfreeco/xctest-dynamic-overlay
+    from: 1.9.0
+  swift-custom-dump:
+    url: https://github.com/pointfreeco/swift-custom-dump
+    from: 1.5.0
+  swift-identified-collections:
+    url: https://github.com/pointfreeco/swift-identified-collections
+    from: 1.1.1
+  swift-navigation:
+    url: https://github.com/pointfreeco/swift-navigation
+    from: 2.7.0
+  swift-clocks:
+    url: https://github.com/pointfreeco/swift-clocks
+    from: 1.0.6
+  combine-schedulers:
+    url: https://github.com/pointfreeco/combine-schedulers
+    from: 1.1.0
+
+targets:
+  Nightcap:
+    type: application
+    platform: macOS
+    deploymentTarget: 14.0
+    info:
+      path: Nightcap/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDisplayName: Nightcap
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSUIElement: true
+        NSHumanReadableCopyright: "© 2026 Abdo Eaita. All rights reserved."
+    entitlements:
+      path: Nightcap/Nightcap.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.files.user-selected.read-only: true
+    sources:
+      - path: Nightcap
+    dependencies:
+      - package: ComposableArchitecture
+      - package: swift-dependencies
+        product: Dependencies
+      - package: swift-dependencies
+        product: DependenciesMacros
+      - package: swift-sharing
+        product: Sharing
+      - package: swift-case-paths
+        product: CasePaths
+      - package: swift-case-paths
+        product: CasePathsCore
+      - package: swift-concurrency-extras
+        product: ConcurrencyExtras
+      - package: swift-perception
+        product: Perception
+      - package: swift-perception
+        product: PerceptionCore
+      - package: xctest-dynamic-overlay
+        product: IssueReporting
+      - package: swift-custom-dump
+        product: CustomDump
+      - package: swift-identified-collections
+        product: IdentifiedCollections
+      - package: swift-navigation
+        product: SwiftNavigation
+      - package: combine-schedulers
+        product: CombineSchedulers
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        CURRENT_PROJECT_VERSION: 1
+        DEVELOPMENT_TEAM: 85R85ZNGEX
+        MARKETING_VERSION: 0.1.0
+        PRODUCT_BUNDLE_IDENTIFIER: com.abdocodes.nightcap
+        SWIFT_VERSION: 5.0
+      configs:
+        Release:
+          ENABLE_HARDENED_RUNTIME: YES
+
+  NightcapTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: 14.0
+    sources:
+      - path: NightcapTests
+    dependencies:
+      - target: Nightcap
+      - package: ComposableArchitecture
+      - package: swift-dependencies
+        product: Dependencies
+      - package: swift-concurrency-extras
+        product: ConcurrencyExtras
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.abdocodes.nightcap.tests
+        SWIFT_VERSION: 5.0

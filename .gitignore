@@ -1,0 +1,23 @@
+## Xcode / SwiftPM
+build/
+DerivedData/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+## xcodegen
+Nightcap.xcodeproj
+
+## macOS
+.DS_Store
+
+## Editor
+.vscode/
+.idea/
+
+## CI / archives
+*.xcarchive
+*.ipa
+*.dSYM.zip
+*.dSYM
