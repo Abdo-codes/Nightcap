@@ -17,6 +17,7 @@ Nightcap.xcodeproj
 .idea/
 
 ## CI / archives
+dist/
 *.xcarchive
 *.ipa
 *.dSYM.zip

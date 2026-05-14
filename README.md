@@ -38,6 +38,14 @@ releases the moment they exit. Zero polling, zero battery overhead when idle.
 
 **Mac App Store** — coming soon.
 
+**Homebrew** — after the first signed release is published:
+
+```bash
+brew install --cask Abdo-codes/tap/nightcap
+```
+
+Maintainer release notes live in [docs/HOMEBREW.md](docs/HOMEBREW.md).
+
 **Build from source:**
 
 ```bash

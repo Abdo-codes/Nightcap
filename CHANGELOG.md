@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Homebrew cask release packaging, notarized GitHub Release publishing, and
+  optional tap update workflow
+
 ## [0.1.0] - 2026-05-14
 
 ### Added
