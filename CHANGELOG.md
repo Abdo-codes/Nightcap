@@ -7,9 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0] - 2026-05-14
+
 ### Added
-- Homebrew cask release packaging, notarized GitHub Release publishing, and
-  optional tap update workflow
+- Pause/resume watching for saved apps, so an app can stay in the list without
+  keeping the Mac awake.
+- Homebrew cask release packaging, notarized GitHub Release publishing, and tap
+  updates.
+- README hero image showing the active and idle menu states.
+
+### Changed
+- Menu status now uses stable active-app counts instead of expanding with app
+  names.
+- Watched-app rows show paused state and use clearer Pause/Resume/Remove copy.
 
 ## [0.1.0] - 2026-05-14
 
@@ -28,5 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   API categories (UserDefaults `CA92.1`, file timestamp `C617.1`)
 - Full sandbox + hardened runtime (Release configuration)
 
-[Unreleased]: https://github.com/Abdo-codes/Nightcap/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Abdo-codes/Nightcap/compare/v1.0...HEAD
+[1.0]: https://github.com/Abdo-codes/Nightcap/compare/v0.1.0...v1.0
 [0.1.0]: https://github.com/Abdo-codes/Nightcap/releases/tag/v0.1.0
