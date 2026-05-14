@@ -6,6 +6,8 @@
   [![CI](https://github.com/Abdo-codes/Nightcap/actions/workflows/ci.yml/badge.svg)](https://github.com/Abdo-codes/Nightcap/actions/workflows/ci.yml)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
   [![macOS 14+](https://img.shields.io/badge/macOS-14.0%2B-blue.svg)](#requirements)
+
+  <img src="Marketing/AppStore/screenshots-final/03-awake-then-sleep.png" alt="Nightcap keeps your Mac awake while watched apps run, then allows sleep when they quit" width="900" />
 </div>
 
 ---
