@@ -41,6 +41,7 @@ jobs:
             -scheme Nightcap \
             -configuration Debug \
             -destination 'platform=macOS,arch=arm64' \
+            -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO
 
       - name: Test
@@ -49,6 +50,7 @@ jobs:
             -project Nightcap.xcodeproj \
             -scheme Nightcap \
             -destination 'platform=macOS,arch=arm64' \
+            -skipMacroValidation \
             CODE_SIGNING_ALLOWED=NO \
             -resultBundlePath TestResults.xcresult
 
