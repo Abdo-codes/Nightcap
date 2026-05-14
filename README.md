@@ -38,7 +38,7 @@ releases the moment they exit. Zero polling, zero battery overhead when idle.
 
 **Mac App Store** — coming soon.
 
-**Homebrew** — after the first signed release is published:
+**Homebrew**:
 
 ```bash
 brew install --cask Abdo-codes/tap/nightcap
