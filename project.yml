@@ -116,6 +116,8 @@ targets:
       - package: ComposableArchitecture
       - package: swift-dependencies
         product: Dependencies
+      - package: swift-sharing
+        product: Sharing
       - package: swift-concurrency-extras
         product: ConcurrencyExtras
     settings:

@@ -20,6 +20,7 @@ struct AppFeature {
         case reconcile
         case addAppRequested(WatchedApp)
         case removeAppRequested(WatchedApp.ID)
+        case observationToggled(WatchedApp.ID, Bool)
         case launchAtLoginToggled(Bool)
         case launchAtLoginStatusUpdated(LaunchAtLoginStatus)
         case quitTapped
@@ -46,7 +47,7 @@ struct AppFeature {
                 .cancellable(id: CancelID.lifecycle, cancelInFlight: true)
 
             case let .lifecycleEvent(.launched(id)):
-                guard state.watchedApps.contains(where: { $0.bundleID == id }) else { return .none }
+                guard state.watchedApps.contains(where: { $0.bundleID == id && $0.isObserved }) else { return .none }
                 state.runningWatchedIDs.insert(id)
                 syncAssertion(&state)
                 return .none
@@ -78,6 +79,22 @@ struct AppFeature {
                 if state.runningWatchedIDs.remove(id) != nil {
                     syncAssertion(&state)
                 }
+                return .none
+
+            case let .observationToggled(id, isObserved):
+                state.$watchedApps.withLock { apps in
+                    guard let index = apps.firstIndex(where: { $0.bundleID == id }) else { return }
+                    apps[index].isObserved = isObserved
+                }
+
+                if isObserved {
+                    if lifecycle.runningBundleIDs().contains(id) {
+                        state.runningWatchedIDs.insert(id)
+                    }
+                } else {
+                    state.runningWatchedIDs.remove(id)
+                }
+                syncAssertion(&state)
                 return .none
 
             case let .launchAtLoginToggled(enable):
@@ -115,9 +132,12 @@ struct AppFeature {
     }
 
     private func reconcileRunning(_ state: inout State) {
-        let watchedIDs = Set(state.watchedApps.map(\.bundleID))
-        state.runningWatchedIDs = lifecycle.runningBundleIDs().intersection(watchedIDs)
+        state.runningWatchedIDs = lifecycle.runningBundleIDs().intersection(observedIDs(in: state))
         syncAssertion(&state)
+    }
+
+    private func observedIDs(in state: State) -> Set<String> {
+        Set(state.watchedApps.filter(\.isObserved).map(\.bundleID))
     }
 
     private func syncAssertion(_ state: inout State) {

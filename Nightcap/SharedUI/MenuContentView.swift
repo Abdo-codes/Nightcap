@@ -13,23 +13,27 @@ struct MenuContentView: View {
         Divider()
 
         if store.watchedApps.isEmpty {
-            Text("No apps watched")
+            Text("No apps added")
                 .foregroundStyle(.secondary)
         } else {
             ForEach(store.watchedApps) { app in
                 Menu {
-                    Button("Remove \(app.displayName)", role: .destructive) {
+                    Button(app.isObserved ? "Pause Watching" : "Resume Watching") {
+                        store.send(.observationToggled(app.id, !app.isObserved))
+                    }
+
+                    Button("Remove from List", role: .destructive) {
                         store.send(.removeAppRequested(app.id))
                     }
                 } label: {
                     HStack {
-                        Image(systemName: store.runningWatchedIDs.contains(app.bundleID)
-                              ? "circle.fill"
-                              : "circle")
-                            .foregroundStyle(store.runningWatchedIDs.contains(app.bundleID)
-                                             ? .green
-                                             : .secondary)
+                        Image(systemName: statusIcon(for: app))
+                            .foregroundStyle(statusColor(for: app))
                         Text(app.displayName)
+                        if !app.isObserved {
+                            Text("Paused")
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
             }
@@ -67,21 +71,19 @@ struct MenuContentView: View {
     @ViewBuilder
     private var statusLine: some View {
         if store.assertionHeld {
-            Label(holdingForLabel, systemImage: "cup.and.saucer.fill")
+            Label("Keeping Mac Awake", systemImage: "cup.and.saucer.fill")
+            Text(activeAppsLabel)
+                .foregroundStyle(.secondary)
         } else {
-            Label("Idle — sleep allowed", systemImage: "moon.zzz")
+            Label("Idle", systemImage: "moon.zzz")
+            Text("Sleep allowed")
+                .foregroundStyle(.secondary)
         }
     }
 
-    private var holdingForLabel: String {
-        let names = store.watchedApps
-            .filter { store.runningWatchedIDs.contains($0.bundleID) }
-            .map(\.displayName)
-        if names.count <= 3 {
-            return "Holding for: \(names.joined(separator: ", "))"
-        }
-        let first = names.prefix(3).joined(separator: ", ")
-        return "Holding for: \(first) (+\(names.count - 3) more)"
+    private var activeAppsLabel: String {
+        let count = store.runningWatchedIDs.count
+        return count == 1 ? "1 app active" : "\(count) apps active"
     }
 
     private func presentAppPicker() {
@@ -111,8 +113,10 @@ struct MenuContentView: View {
 
             if let existing = store.watchedApps.first(where: { $0.bundleID == bundleID }) {
                 presentAlert(
-                    title: "Already watching",
-                    message: "\(existing.displayName) is already in your list."
+                    title: "Already in your list",
+                    message: existing.isObserved
+                        ? "\(existing.displayName) is already being watched."
+                        : "\(existing.displayName) is already in your list. Choose Resume Watching from its menu to watch it again."
                 )
                 return
             }
@@ -130,5 +134,15 @@ struct MenuContentView: View {
         alert.informativeText = message
         alert.addButton(withTitle: "OK")
         alert.runModal()
+    }
+
+    private func statusIcon(for app: WatchedApp) -> String {
+        guard app.isObserved else { return "pause.circle" }
+        return store.runningWatchedIDs.contains(app.bundleID) ? "circle.fill" : "circle"
+    }
+
+    private func statusColor(for app: WatchedApp) -> Color {
+        guard app.isObserved else { return .secondary }
+        return store.runningWatchedIDs.contains(app.bundleID) ? .green : .secondary
     }
 }

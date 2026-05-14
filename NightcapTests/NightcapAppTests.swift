@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import ConcurrencyExtras
+import Foundation
 import XCTest
 @testable import Nightcap
 
@@ -84,6 +85,75 @@ final class NightcapAppTests: XCTestCase {
 
         let duplicate = WatchedApp(bundleID: "com.mitchellh.ghostty", displayName: "Ghostty")
         await store.send(.addAppRequested(duplicate))
+    }
+
+    func test_observation_toggle_off_releases_running_app_without_removing_it() async {
+        let env = makeEnv(running: ["com.mitchellh.ghostty"])
+        let store = makeStore(env: env)
+
+        await store.send(.onAppear) {
+            $0.runningWatchedIDs = ["com.mitchellh.ghostty"]
+            $0.assertionHeld = true
+            $0.launchAtLoginStatus = .disabled
+        }
+
+        await store.send(.observationToggled("com.mitchellh.ghostty", false)) {
+            $0.$watchedApps.withLock { $0[0].isObserved = false }
+            $0.runningWatchedIDs = []
+            $0.assertionHeld = false
+        }
+
+        XCTAssertGreaterThanOrEqual(env.released.value, 1)
+    }
+
+    func test_observation_toggle_on_acquires_if_app_is_running() async {
+        let env = makeEnv(running: ["com.mitchellh.ghostty"])
+        let store = makeStore(env: env)
+
+        await store.send(.onAppear) {
+            $0.runningWatchedIDs = ["com.mitchellh.ghostty"]
+            $0.assertionHeld = true
+            $0.launchAtLoginStatus = .disabled
+        }
+
+        await store.send(.observationToggled("com.mitchellh.ghostty", false)) {
+            $0.$watchedApps.withLock { $0[0].isObserved = false }
+            $0.runningWatchedIDs = []
+            $0.assertionHeld = false
+        }
+
+        await store.send(.observationToggled("com.mitchellh.ghostty", true)) {
+            $0.$watchedApps.withLock { $0[0].isObserved = true }
+            $0.runningWatchedIDs = ["com.mitchellh.ghostty"]
+            $0.assertionHeld = true
+        }
+
+        XCTAssertEqual(env.acquired.value, ["Nightcap: Ghostty", "Nightcap: Ghostty"])
+    }
+
+    func test_unobserved_app_launch_does_not_acquire() async {
+        let env = makeEnv(running: [])
+        let store = makeStore(env: env)
+
+        await store.send(.onAppear) {
+            $0.launchAtLoginStatus = .disabled
+        }
+
+        await store.send(.observationToggled("com.mitchellh.ghostty", false)) {
+            $0.$watchedApps.withLock { $0[0].isObserved = false }
+        }
+
+        await store.send(.lifecycleEvent(.launched(bundleID: "com.mitchellh.ghostty")))
+        XCTAssertEqual(env.acquired.value, [])
+    }
+
+    func test_legacy_watched_app_records_decode_as_observed() throws {
+        let data = #"{"bundleID":"com.example.app","displayName":"Example"}"#
+            .data(using: .utf8)!
+
+        let app = try JSONDecoder().decode(WatchedApp.self, from: data)
+
+        XCTAssertTrue(app.isObserved)
     }
 
     func test_launch_at_login_failure_rolls_back() async {
